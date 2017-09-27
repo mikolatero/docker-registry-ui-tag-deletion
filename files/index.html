@@ -1,0 +1,110 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+
+
+</head>
+
+<body>
+
+  <div id="main-box">
+    <div class="list-group"></div>
+  </div>
+
+  <div id="tag-box">
+    <div class="list-group"></div>
+  </div>
+
+</body>
+
+<script>
+// INITIAL LOAD, GET CATALOG FROM REGISTRY
+$(document).ready(function() {
+  $("#tag-box").hide();
+  $.ajax({
+    dataType: "json",
+    url: "process.php",
+    data: {
+        data: 'catalog'
+    },
+    success: function(data){
+      $.each(data.repositories, function(i, item){
+        $("#main-box > .list-group").append('<a data-image="'+item+'" href="#" class="list-group-item gettag">'+item+'</a>');
+      })
+    }
+  });
+
+});
+
+// WHEN USER CLICK ON IMAGE, SHOW IMAGE tags
+$('body').on('click','.gettag',function(){
+    $('#tag-box > .list-group').empty();
+    $("#main-box").hide();
+    $("#tag-box").show();
+    var image = $(this).data('image');
+
+    $.ajax({
+      dataType: "json",
+      url: "process.php",
+      data: {
+          data: 'image',
+          name: image
+      },
+      success: function(data){
+        $("#tag-box > .list-group").append('<a href="#" class="list-group-item backToCatalog list-group-item-info"><- Atras</a>');
+        $.each(data.tags, function(i, item){
+          $("#tag-box > .list-group").append('<a data-image="'+image+'" data-tag="'+item+'" href="#" class="list-group-item sendtag">'+item+'</a>');
+        })
+      }
+    });
+
+});
+
+// WHEN USER CLICK ON TAG, SWOW TAG MANIFEST
+$('body').on('click','.sendtag',function(){
+  var tag = $(this).data('tag');
+  var image = $(this).data('image');
+
+  // Please, dont hate me for the next line.
+  var esto = $(this);
+
+  $.ajax({
+    dataType: "json",
+    url: "process.php",
+    data: {
+        data: 'deletetag',
+        tag: tag,
+        image: image
+    },
+    success: function(data){
+      if (data == 0) {
+        esto.css('background-color', 'red');
+        esto.fadeOut('fast',function(){
+            esto.remove();
+        })
+      } else {
+        alert("No se ha podido borrar el tag seleccionado");
+      }
+    }
+  });
+
+})
+
+$('body').on('click','.backToCatalog',function(){
+  $("#main-box").show();
+  $("#tag-box").hide();
+});
+
+
+</script>
