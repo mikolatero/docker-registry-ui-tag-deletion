@@ -1,5 +1,5 @@
 # docker-registry-ui-tag-deletion
 
-## Simple html UI for delete tags from Docker Registry via APIv2.
+## Interfaz HTML sencilla para eliminar tags de un Docker-Registry a traves de APIv2
 
-Only you need to change the API url into classes/config.php and start docker-compose.
+- Lo unico que debes modificar es el fichero classes/config.php para introducir la ruta de tu registry y listo.
